@@ -13,7 +13,7 @@ body {
   top: 0; 
   right: 0; 
   width: 50%; 
-  z-index: 50;
+  z-index: 150;
 }
 .panel {
   padding-left: 20px;
@@ -40,4 +40,24 @@ body {
 }
 .panel:last-child {
 
+}
+
+.tooltip {
+    position: absolute;
+    font-family: 'Roboto';
+    font-size: 14px;
+    z-index: 1000000000;
+    text-align: left;
+    width: auto;
+    color: #353535;
+    visibility: hidden;
+    pointer-events: all;
+    border: 1px solid rgba(193, 193, 193, 0.8);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+    background: white;
+    padding: 0.75em;
+}
+.county.hover {
+  stroke: "black";
+  cursor: pointer;
 }
