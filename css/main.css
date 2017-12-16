@@ -1,0 +1,43 @@
+body { 
+  margin:0;
+  position:fixed;
+  top:0;right:0;bottom:0;left:0;
+
+}
+#container {
+  position: relative;
+  z-index: 100;
+}
+#sticky { 
+  position: absolute; 
+  top: 0; 
+  right: 0; 
+  width: 50%; 
+  z-index: 50;
+}
+.panel {
+  padding-left: 20px;
+  padding-top: 25vh;
+  padding-bottom: 25vh;
+
+  margin: 0 0 35em 10em;
+    padding: 0.6em 2.5em 0.3em 2.5em;
+    border-radius: 1em;
+    background: #fff;
+    width: 25em;
+    z-index: 600;
+    box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.1);
+}
+
+
+}
+.panel p {
+  /*padding-right: 50%;*/
+}
+.panel:first-child {
+  margin-top: 8em;
+
+}
+.panel:last-child {
+
+}
