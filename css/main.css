@@ -57,7 +57,25 @@ body {
     background: white;
     padding: 0.75em;
 }
+.counties {
+  stroke-linecap: round;
+    stroke-width: 2px;
+}
+.county {
+    stroke-linecap: round;
+    stroke-width: 2px;
+
+ 
+}
 .county.hover {
-  stroke: "black";
+
   cursor: pointer;
+}
+
+.county-border {
+
+  stroke: #fff;
+  stroke-width: 0.1px;
+  fill: none;
+}
 }

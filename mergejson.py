@@ -17,13 +17,14 @@ def main(args):
 
 
 		
-	with open('alabama/alabama.json') as data_file:    
+	with open('alabama/alabama2.json') as data_file:    
 		data = json.load(data_file)
 		#pass
+	#print data
 
 
 	#print pprint(data['features'][0]['properties'])
-	tomodify = data['features']
+	tomodify = data['objects']['alabama']['geometries']
 	for i in range(len(tomodify)):
 		properties = tomodify[i]['properties']
 		geoid = properties['GEOID']
@@ -32,7 +33,8 @@ def main(args):
 			
 			properties[headernames[j]] = csvdict[geoid][j]
 		#print properties
-	with open('alabama/mergedalabama.json', 'w') as fp:
+		#break
+	with open('alabama/mergedalabama2.json', 'w') as fp:
 		json.dump(data, fp)
 if __name__ == "__main__":
 	main(sys.argv)

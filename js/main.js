@@ -3,8 +3,6 @@ height = window.innerHeight,
 margin = {top: 50, bottom: 50, left: 50, right: 50},
 container = $('#container'),
 scrollTop = container.scrollTop()
-console.log(scrollTop)
-console.log(container)
 svg = d3.select('#sticky')
 	.append("svg")
 	.attr("width", width)
@@ -37,23 +35,18 @@ $(".panel").each(function() {
 	cutoffs.push($(this).position().top)
 })
 
-console.log(cutoffs)
 
 
 
 
-  
-console.log(d3.range(9).map(function(i) { return "q" + i + "-9"; }))
 
 var colorScale = d3.scaleLinear()
 					.domain([0.810500,0, -0.765782])
 					.range(["#f55","#f5f5f5","#1055fa"]);
-console.log(d3.color("#ff3333").darker(2))
-console.log(d3.color("#2161fa").darker(2))
 
 
 
-d3.json('alabama/mergedalabama.json', function(data) {
+d3.json('alabama/mergedalabama2.json', function(data) {
 	console.log(data);
 	var projection = d3.geoMercator()
     .scale(1)
@@ -64,33 +57,41 @@ d3.json('alabama/mergedalabama.json', function(data) {
 	    .projection(projection);
 
 	// Compute the bounds of a feature of interest, then derive scale & translate.
-	var b = path.bounds(data),
+	var b = path.bounds(topojson.feature(data, data.objects.alabama)),
 	    s = .9 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
 	    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 	 
-
+	    console.log(s)
+	    console.log(t)
 	// Update the projection to use computed scale & translate.
 	projection
 	    .scale(s)
 	    .translate(t); 
-	console.log(data.features.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];}))
+
+	data.objects.alabama.geometries.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];})
+	console.log(data.objects.alabama.geometries)
 	/*var turnoutScale = d3.scaleQuantile()
 					.domain(data.features.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];}))
 					.range(["#ff3333",'#FD5353','#FC7474','#FA9494','#F8B4B4','#F7D5D5',"#f5f5f5"]);*/
 	var turnoutScale = d3.scaleThreshold()
 					.domain([0.2,0.25,0.3,0.35])
-					.range(['#F7D5D5','#F9B5B5','#FB9595','#FD7575','#FF5555']);
-	svg.append("g")
+					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
+	counties = svg.append("g")
 	      .attr("class", "counties")
 	      //.attr("transform", "translate("+margin.left + ", " + margin.top+")")
-			.selectAll("path")
-	    .data(data.features)
+	counties.selectAll("path")
+	    .data(topojson.feature(data, data.objects.alabama).features)
 	    .enter().append("path")
 	      .attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
 	      .attr("d", path)
+	      .attr("stroke", "none")
 	      .attr("class", "county")
 	      .on("mouseover", function(d) {
 	      	//console.log(d.properties['countyname'])
+	      	 d3.select(this.parentNode.appendChild(this))
+	      	 	
+        		.attr('stroke','black')
+        		.attr("stroke-width", "2px")
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", true);
 		 	mouseOverEvents(data,d3.select(this));
@@ -98,11 +99,18 @@ d3.json('alabama/mergedalabama.json', function(data) {
 
 		})
 		.on("mouseout", function(d) {
+			 d3.select(this)
+
+        		.attr("stroke", "none")
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
 
 		}) 
+	counties.append("path")
+		.attr("class","county-border")
+		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
+
 	     // .attr("stroke", "#aaa")
 	    
 	    //.append("title")
@@ -115,13 +123,13 @@ d3.json('alabama/mergedalabama.json', function(data) {
 	
 	    	d3.selectAll(".county")
 	    		.transition()
-	    		.duration(1000)
+	    		.duration(1500)
 	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
 		}
 	    else if (scrollTop > cutoffs[1] && scrollTop < cutoffs[2]) {
 	    	d3.selectAll(".county")
 	    		.transition()
-	    		.duration(2000)
+	    		.duration(1500)
 	    		.attr("fill", function(d) { return colorScale(d.properties['percenttrumpvotes']-d.properties['percentclintonvotes']); })
 		}	
 		else if (scrollTop > cutoffs[2] && scrollTop < cutoffs[3]) {
@@ -132,7 +140,8 @@ d3.json('alabama/mergedalabama.json', function(data) {
 	    				&& (d.properties['percentmoorevotes'] < d.properties['percentjonesvotes']));
 	    		})
 	   		.transition()
-	    		.duration(2000)
+	   			.delay(1500)
+	    		.duration(1500)
 	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
 	
 	    	d3.selectAll(".county")
@@ -141,13 +150,13 @@ d3.json('alabama/mergedalabama.json', function(data) {
 	    				&& (d.properties['percentmoorevotes'] < d.properties['percentjonesvotes']));
 	    		})
 	    		.transition()
-	    		.duration(2000)
-	    		.attr("fill", "#f5f5f5")   		
+	    		.duration(1500)
+	    		.attr("fill", "#ececec")   		
 		}	
 		else if (scrollTop > cutoffs[3] && scrollTop < cutoffs[4]) {
 	    	d3.selectAll(".county")
 	    		.transition()
-	    		.duration(2000)
+	    		.duration(1500)
 	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
 		}
 	});
