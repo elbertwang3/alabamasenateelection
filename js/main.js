@@ -88,10 +88,11 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 	      .attr("class", "county")
 	      .on("mouseover", function(d) {
 	      	//console.log(d.properties['countyname'])
-	      	 d3.select(this.parentNode.appendChild(this))
+	      	 d3.select(this).moveToFront()
 	      	 	
         		.attr('stroke','black')
-        		.attr("stroke-width", "2px")
+        		.attr("stroke-opacity", "1")
+
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", true);
 		 	mouseOverEvents(data,d3.select(this));
@@ -99,9 +100,7 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 
 		})
 		.on("mouseout", function(d) {
-			 d3.select(this)
-
-        		.attr("stroke", "none")
+			 d3.select(this).attr("stroke", "none").moveToBack()
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
@@ -126,13 +125,18 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 	    		.duration(1500)
 	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
 		}
+		//TRUMP MAP
 	    else if (scrollTop > cutoffs[1] && scrollTop < cutoffs[2]) {
 	    	d3.selectAll(".county")
 	    		.transition()
 	    		.duration(1500)
 	    		.attr("fill", function(d) { return colorScale(d.properties['percenttrumpvotes']-d.properties['percentclintonvotes']); })
+	    	
 		}	
+		//COUNTIES THAT FLIPFLOPPED
 		else if (scrollTop > cutoffs[2] && scrollTop < cutoffs[3]) {
+
+			
 	    	 d3.selectAll(".county")
 	    		.filter(function(d) { 
 	    			
@@ -151,15 +155,135 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 	    		})
 	    		.transition()
 	    		.duration(1500)
-	    		.attr("fill", "#ececec")   		
-		}	
-		else if (scrollTop > cutoffs[3] && scrollTop < cutoffs[4]) {
+	    		.attr("fill", "#f5f5f5")  
+
 	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
+	    		})
+	    		.moveToBack()
+	    		.attr("stroke", "none")
+	    		.attr("stroke-opacity", "1")
+	    
+	    		
+		}	
+		//METRO AREAS THAT FLIPFLOPPED
+		else if (scrollTop > cutoffs[3] && scrollTop < cutoffs[4]) {
+
+			d3.selectAll(".county")
+			.on("mouseout", function(d) {
+				d3.select(this).attr("stroke", 'none').moveToBack()
+		 	data = d.properties;
+		 	d3.select(this).classed("hover", false);
+		 	mouseOutEvents(data,d3.select(this));
+				d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
+	    		}).moveToFront()
+			})
+
+			d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
+	    		})
+	    		.on("mouseout", function(d) {
+			
+
+
+		 	data = d.properties;
+		 	d3.select(this).classed("hover", false);
+		 	mouseOutEvents(data,d3.select(this));
+
+		}) 
+	    		.moveToFront()
+	    		.attr("stroke", "black")
+	  		.transition()
+	    		.duration(1500)
+	    				.attr("stroke-opacity", "1") 
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
+	    		})
+	    		.moveToBack()
+	    		.attr("stroke", "none")
+	    		.attr("stroke-opacity", "0") 	
+			
+	    }
+	    //ALL METRO AREAS
+	    else if (scrollTop > cutoffs[4] && scrollTop < cutoffs[5]) {
+	    	d3.selectAll(".county")
+			.on("mouseout", function(d) {
+				d3.select(this).attr("stroke", 'none').moveToBack()
+		 	data = d.properties;
+		 	d3.select(this).classed("hover", false);
+		 	mouseOutEvents(data,d3.select(this));
+				d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
+	    		}).moveToFront()
+			})
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
+	    		})
+	    		.on("mouseout", function(d) {
+			
+
+
+		 	data = d.properties;
+		 	d3.select(this).classed("hover", false);
+		 	mouseOutEvents(data,d3.select(this));
+
+		}) 
+	    		.moveToFront()
+	    		.attr("stroke", "black")
 	    		.transition()
 	    		.duration(1500)
-	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
+				.attr("stroke-opacity", "1") 	
+	    		
+	    	
+	    				
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return !((d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery'))
+	    		})
+
+	    		.transition()
+	    		.delay(1500)
+	    		.duration(1500)
+	    		.attr("fill", "#f5f5f5")
+
+			
+	    	
 		}
+		//METRO AREAS HAD SOME OF THE LOWEST DECREASE IN TURNOUT  
+		else if (scrollTop > cutoffs[5] && scrollTop < cutoffs[6]) {
+				
+	    		
+	    	
+	    	
+	    	d3.selectAll(".county")
+	    		.transition()
+	    		.delay(1500)
+	    		.duration(1500)
+	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+	    	}
 	});
+
+		d3.selection.prototype.moveToFront = function() {
+				return this.each(function(){
+					this.parentNode.appendChild(this);
+				});
+			};
+		d3.selection.prototype.moveToBack = function() {
+					return this.each(function() {
+							var firstChild = this.parentNode.firstChild;
+							if (firstChild) {
+									this.parentNode.insertBefore(this, firstChild);
+							}
+					});
+			};
 	function mouseOverEvents(data, element) {
     	tooltip.selectAll("div").remove();
     	var tooltipcontainer = tooltip.append("div");
