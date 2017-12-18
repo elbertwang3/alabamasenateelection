@@ -37,7 +37,7 @@ annotations = svg.append("g")
 	.attr("width" ,100)
 	.attr("height", 300)
 gannotation = annotations.selectAll(".sideAnnotation")
-		.data(["Change in turnout from the 2016 Presidential Election", "Change in Republican vote from 2016 election"])
+		.data(["Change in turnout from the 2016 Presidential Election", "How Moore fared compared to Trump in 2016"])
 		.enter()
 		.append("g")
 		.attr("height", 100)
@@ -47,6 +47,19 @@ gannotation.append('text')
 	.attr("class", "annotation-label")
 	.attr("dy", "1em")
 	.call(wrap, 200)
+
+gannotation.append('text')
+	.text(function(d) { 
+		if (!(d=="How Moore fared compared to Trump in 2016")) {
+			return "-25%";
+		} else {
+			return '-10%';
+		}
+	})
+	.attr("y", function(d, i) { return i * height/3;})
+	.attr("dx", "2.5em")
+	.attr("class", "annotation-number")
+	.attr("dy", "3em")
 
 
 
@@ -85,7 +98,7 @@ function ready(error,data, bigcities) {
 					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
 	counties = svg.append("g")
 	      .attr("class", "counties")
-	      .attr("transform", "translate(-175,0)")
+	      .attr("transform", "translate(-160,0)")
 	counties.selectAll("path")
 	    .data(topojson.feature(data, data.objects.alabama).features)
 	    .enter().append("path")
@@ -107,13 +120,13 @@ function ready(error,data, bigcities) {
 		
 
 		})
-		.on("mouseout", function(d) {
+		/*.on("mouseout", function(d) {
 			 d3.select(this).attr("stroke-opacity", "0").moveToBack()
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
 
-		}) 
+		}) */
 	counties.append("path")
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
@@ -131,7 +144,7 @@ function ready(error,data, bigcities) {
 		//.attr("cx", function (d) { console.log(projection(parseFloat(d['lng']))); return projection(parseFloat(d['lng'])); })
 		//.attr("cy", function (d) { console.log(projection(parseFloat(d['lat'])));return projection(parseFloat(d['lat'])); })
 		.attr("r", 3)
-		.attr("cx", -175)
+		.attr("cx", -160)
 		 .attr("transform", function(d) {
 		    return "translate(" + projection([
 		      d['lng'],
@@ -142,7 +155,7 @@ function ready(error,data, bigcities) {
 		.append("text")
 		.text(function(d) { return d['city']; })
 		.attr("class", "big-city-name")
-		.attr("x", -170)
+		.attr("x", -155)
 		.attr("y", 12)
 		 .attr("transform", function(d) {
 		    return "translate(" + projection([
@@ -472,8 +485,9 @@ function ready(error,data, bigcities) {
 					});
 			};
 	function mouseOverEvents(data, element) {
+		console.log(data);
     	tooltip.selectAll("div").remove();
-
+    	gannotation.selectAll(".annotation-number").remove();
     	var tooltipcontainer = tooltip.append("div");
 					
 
@@ -495,7 +509,7 @@ function ready(error,data, bigcities) {
 			.attr("class", "election-label")
 			//.attr("transform", function(d, i) { console.log(d); return "translate("+ d['x']+ ",0)"; })
 			.text(function(d) { return d['label'];})
-			.style('left', function(d) { return d['x'];})
+			.style('left', function(d,i) { return d['x'];})
 
 		barsvgdiv = tooltipcontainer.append("div")
 						.attr("class", "bar-svg-div")
@@ -515,7 +529,7 @@ function ready(error,data, bigcities) {
 		barsvg = barsvgdiv.append("svg")
 					.attr("class", "bar-svg")
 					.attr("width", 250)
-					.attr("height", 70)
+					.attr("height", 75)
 
 		
 
@@ -630,19 +644,46 @@ function ready(error,data, bigcities) {
     		.attr("height", barsheight - 1)
     		.attr("fill", "#ececec")
 
+    	demographicsinfo = tooltipcontainer.append("div")
+    		.attr("class", "demographicsinfo")
+    		
+    	demographicsinfo.append("text")
+    		.text("Demographics")
+    		.attr("class", "demographicstitle")
+    	demographicslabels = demographicsinfo.append("div")
+    		.attr("class", "demographicslabels")
+     	demographicslabels.selectAll(".demographicslabel")
+    		.data(['% black', '% white', '% evangelical', '% turnout'])
+    		.enter()
+    		.append("div")
+    		.text(function(d) { return d;})
+    		.attr("class", "demographic-label")
+    		.style('left', function(d,i) { return i * 68;})
+    	demographicsvalues = demographicsinfo.append("div")
+    		.attr("class", "demographicsvalues")
+    	console.log(data['percentblack2017'] * 100)
+    	demographicsvalues.selectAll(".demographic-value")
+    		.data([Math.round(parseFloat(data['percentblack2017'])*100) + "%", Math.round(parseFloat(data['percentwhite2017'])*100) + "%", Math.round(parseFloat(data['evangelicalpercent'])*100) + "%", Math.round(parseFloat(data['senateturnout'])*100) + "%"])
+    		.enter()
+    		.append("div")
+    		.text(function(d) { 
+    			console.log(d)
+    			return d;})
+    		.attr("class", "demographic-value")
+    		.style('left', function(d,i) { return i * 68 + 12;})
+
 		gannotation.append('text')
 	.text(function(d) { 
-		if (d=="Change in turnout from the 2016 Presidential Election") {
+		if (!(d=="How Moore fared compared to Trump in 2016")) {
 			return Math.round((data['senateturnout'] - data['presturnout'])*100)+"%";
 		} else {
-			return Math.round(((data['percentmoorevotes'] - data['percentjonesvotes']) - (data['percenttrumpvotes'] - data['percentclintonvotes']))*100)+'%';
+			return Math.round((data['percentmoorevotes']  - (data['percenttrumpvotes']))*100)+'%';
 		}
 	})
 	.attr("y", function(d, i) { return i * height/3;})
 	.attr("dx", "2.5em")
 	.attr("class", "annotation-number")
 	.attr("dy", "3em")
-	.call(wrap, 200)
       	
       	tooltip
           .style("visibility","visible")
@@ -662,6 +703,19 @@ function ready(error,data, bigcities) {
     }
     function mouseOutEvents(data, element) {
     	gannotation.selectAll(".annotation-number").remove();
+    	gannotation.append('text')
+			.text(function(d) { 
+				if (!(d=="How Moore fared compared to Trump in 2016")) {
+					return "-25%";
+				} else {
+					return '-10%';
+				}
+			})
+			.attr("y", function(d, i) { return i * height/3;})
+			.attr("dx", "2.5em")
+			.attr("class", "annotation-number")
+			.attr("dy", "3em")
+
     	tooltip
        		.style("visibility",null);
 	}

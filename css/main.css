@@ -2,6 +2,7 @@ body {
   margin:0;
   position:fixed;
   top:0;right:0;bottom:0;left:0;
+  background: #ececec;
 
 }
 #container {
@@ -56,6 +57,7 @@ body {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
     background: white;
     padding: 0.75em;
+    height: auto;
 }
 .counties {
   stroke-linecap: round;
@@ -151,5 +153,54 @@ body {
 }
 
   
+
+h1 {
+  font-family: 'Lora';
+  font-weight: 700;
+  font-size: 36px;
+  text-align: center;
+}
+
+p {
+  font-family: "Merriweather";
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+
+.demographicstitle {
+  font-size: 10px;
+  color: #323232;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+
+}
+.demographicslabels {
+  position: relative;
+   margin-top: 5px;
+   height: 15px;
+     border-bottom: 1px solid #cdcdcd;
+}
+
+.demographic-label {
+  display: inline-block;
+  position: absolute;
+   font-size: 10px;
+  opacity: 0.8;
+}
+
+.demographicsvalues {
+  position: relative;
+  margin-top: 3px;
+  margin-bottom: 15px;
+}
+.demographic-value {
+   position: absolute;
+   font-family: "Roboto";
+   font-size: 12px;
+   text-align: center;
+
 
 }
