@@ -120,13 +120,13 @@ function ready(error,data, bigcities) {
 		
 
 		})
-		/*.on("mouseout", function(d) {
+		.on("mouseout", function(d) {
 			 d3.select(this).attr("stroke-opacity", "0").moveToBack()
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
 
-		}) */
+		}) 
 	counties.append("path")
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
@@ -259,8 +259,9 @@ function ready(error,data, bigcities) {
 				 	mouseOutEvents(data,d3.select(this));
 
 				})
+				.moveToBack()
 	    		.attr("stroke-opacity", "0")
-	    		.moveToBack()
+	    		
 
 	    	 d3.selectAll(".county")
 	    		.filter(function(d) { 
