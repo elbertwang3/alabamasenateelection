@@ -30,12 +30,14 @@ $(".panel").each(function() {
 var colorScale = d3.scaleLinear()
 					.domain([0.810500,0, -0.765782])
 					.range(["#f55","#f5f5f5","#1055fa"]);
+var turnoutScale = d3.scaleThreshold()
+					.domain([0.2,0.25,0.3,0.35])
+					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
 
 annotations = svg.append("g")
 	.attr("class", "annotations")
-	.attr("transform", "translate(" + 2.8*width/5 + ", " + height/4 + ")")
-	.attr("width" ,100)
-	.attr("height", 300)
+	.attr("transform", "translate(" + 2.8*width/5 + ", " + 1.75*height/4 + ")")
+
 gannotation = annotations.selectAll(".sideAnnotation")
 		.data(["Change in turnout from the 2016 Presidential Election", "How Moore fared compared to Trump in 2016"])
 		.enter()
@@ -43,7 +45,7 @@ gannotation = annotations.selectAll(".sideAnnotation")
 		.attr("height", 100)
 gannotation.append('text')
 	.text(function(d) { return d;})
-	.attr("y", function(d, i) { return i * height/3;})
+	.attr("y", function(d, i) { return i * height/5;})
 	.attr("class", "annotation-label")
 	.attr("dy", "1em")
 	.call(wrap, 200)
@@ -56,10 +58,71 @@ gannotation.append('text')
 			return '-10%';
 		}
 	})
-	.attr("y", function(d, i) { return i * height/3;})
+	.attr("y", function(d, i) { return i * height/5;})
 	.attr("dx", "2.5em")
 	.attr("class", "annotation-number")
-	.attr("dy", "3em")
+	.attr("dy", "2.5em")
+
+legend = svg.append("g")
+	.attr("class", "legend")
+	.attr("transform", "translate(" + 2.67*width/5 + ", " + 0.5*height/4 + ")")
+legend.append("text")
+	.text("GOP margin of victory in pct. pts")
+	.attr("class", "legend-title")
+	.attr("y", -10)
+	.attr("text-anchor", "middle")
+	.attr("x", 104)
+tiles = legend.selectAll('g')
+	.data([0.75,0.5,0.25,0,-0.25,-0.5,-0.75])
+	.enter()
+	.append("g")
+	.attr("class", "tile-group")
+	.attr("transform", function(d,i) { return "translate("+ 30*i + ",0)";})
+tiles.append("rect")
+	.attr("width", 30)
+	.attr("height", 10)
+	.attr("fill", function(d) { return colorScale(d); })
+tiles.append("text")
+	.text(function(d) { return d*100; })
+	.attr("class", "legend-text")
+	.attr("text-anchor", "middle")
+	.attr("x", 15)
+	.attr("y", 25)
+
+legend2 = svg.append("g")
+	.attr("class", "legend")
+	.attr("transform", "translate(" + 2.67*width/5 + ", " + 1.1*height/4 + ")")
+legend2.append("text")
+	.text("Change in turnout from the 2016 Pres. election")
+	.attr("class", "legend-title")
+	.attr("y", -10)
+	.attr("text-anchor", "middle")
+	.attr("x", 104)
+tiles2 = legend2.selectAll('g')
+	.data([0.15,0.2,0.25,0.3])
+	.enter()
+	.append("g")
+	.attr("class", "tile-group")
+	.attr("transform", function(d,i) { return "translate("+ (30*i+45) + ",0)";})
+			
+
+tiles2.append("rect")
+	.attr("width", 30)
+	.attr("height", 10)
+	.attr("fill", function(d) { console.log(d);return turnoutScale(d); })
+tiles2.append("text")
+	.text(function(d) { return -d*100 +"%";})
+	.attr("class", "legend-text")
+	.attr("text-anchor", "middle")
+	.attr("x", 15)
+	.attr("y", 25)
+
+
+
+
+
+
+
 
 
 
@@ -93,9 +156,7 @@ function ready(error,data, bigcities) {
 	/*var turnoutScale = d3.scaleQuantile()
 					.domain(data.features.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];}))
 					.range(["#ff3333",'#FD5353','#FC7474','#FA9494','#F8B4B4','#F7D5D5',"#f5f5f5"]);*/
-	var turnoutScale = d3.scaleThreshold()
-					.domain([0.2,0.25,0.3,0.35])
-					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
+	
 	counties = svg.append("g")
 	      .attr("class", "counties")
 	      .attr("transform", "translate(-160,0)")
@@ -315,7 +376,17 @@ function ready(error,data, bigcities) {
 	    	
 		}
 		//METRO AREAS HAD SOME OF THE LOWEST DECREASE IN TURNOUT  
+
 		else if (scrollTop > cutoffs[5] && scrollTop < cutoffs[6]) {
+
+		
+
+			
+		
+
+	
+			
+
 				
 	    	d3.selectAll(".county")
 	    		.filter(function(d) {
@@ -451,6 +522,11 @@ function ready(error,data, bigcities) {
 	    	
 	    }
 	    else if (scrollTop > cutoffs[10] && scrollTop < cutoffs[11]) {
+	    	
+			
+
+			
+		
 		    d3.selectAll(".county")
 	    		.filter(function(d) {
 	    			return (d.properties['countyname'] == 'Marengo') || (d.properties['countyname'] == 'Clarke')
@@ -486,7 +562,6 @@ function ready(error,data, bigcities) {
 					});
 			};
 	function mouseOverEvents(data, element) {
-		console.log(data);
     	tooltip.selectAll("div").remove();
     	gannotation.selectAll(".annotation-number").remove();
     	var tooltipcontainer = tooltip.append("div");
@@ -662,13 +737,12 @@ function ready(error,data, bigcities) {
     		.style('left', function(d,i) { return i * 68;})
     	demographicsvalues = demographicsinfo.append("div")
     		.attr("class", "demographicsvalues")
-    	console.log(data['percentblack2017'] * 100)
     	demographicsvalues.selectAll(".demographic-value")
     		.data([Math.round(parseFloat(data['percentblack2017'])*100) + "%", Math.round(parseFloat(data['percentwhite2017'])*100) + "%", Math.round(parseFloat(data['evangelicalpercent'])*100) + "%", Math.round(parseFloat(data['senateturnout'])*100) + "%"])
     		.enter()
     		.append("div")
     		.text(function(d) { 
-    			console.log(d)
+    	
     			return d;})
     		.attr("class", "demographic-value")
     		.style('left', function(d,i) { return i * 68 + 12;})
@@ -681,10 +755,10 @@ function ready(error,data, bigcities) {
 			return Math.round((data['percentmoorevotes']  - (data['percenttrumpvotes']))*100)+'%';
 		}
 	})
-	.attr("y", function(d, i) { return i * height/3;})
+	.attr("y", function(d, i) { return i * height/5;})
 	.attr("dx", "2.5em")
 	.attr("class", "annotation-number")
-	.attr("dy", "3em")
+	.attr("dy", "2.5em")
       	
       	tooltip
           .style("visibility","visible")
@@ -692,13 +766,13 @@ function ready(error,data, bigcities) {
             /*if(viewportWidth < 450 || mobile){
               return "250px";
             }*/
-            return (d3.event.pageY+35) +"px"
+            return (d3.event.pageY-40) +"px"
           })
           .style("left",function(d){
             /*if(viewportWidth < 450 || mobile){
               return "0px";
             }*/
-            return (d3.event.pageX - 125) +"px";
+            return (d3.event.pageX+30) +"px";
           })
 
     }
@@ -712,10 +786,10 @@ function ready(error,data, bigcities) {
 					return '-10%';
 				}
 			})
-			.attr("y", function(d, i) { return i * height/3;})
+			.attr("y", function(d, i) { return i * height/5;})
 			.attr("dx", "2.5em")
 			.attr("class", "annotation-number")
-			.attr("dy", "3em")
+			.attr("dy", "2.5em")
 
     	tooltip
        		.style("visibility",null);
