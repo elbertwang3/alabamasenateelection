@@ -44,6 +44,24 @@ var colorScale = d3.scaleLinear()
 					.domain([0.810500,0, -0.765782])
 					.range(["#f55","#f5f5f5","#1055fa"]);
 
+annotations = svg.append("g")
+	.attr("class", "annotations")
+	.attr("transform", "translate(" + 2.8*width/5 + ", " + height/4 + ")")
+	.attr("width" ,100)
+	.attr("height", 300)
+gannotation = annotations.selectAll(".sideAnnotation")
+		.data(["Change in turnout from the 2016 Presidential Election", "Change in Republican vote from 2016 election"])
+		.enter()
+		.append("g")
+		.attr("height", 100)
+gannotation.append('text')
+	.text(function(d) { return d;})
+	.attr("y", function(d, i) { return i * height/3;})
+	.attr("class", "annotation-label")
+	.attr("dy", "1em")
+	.call(wrap, 200)
+
+
 
 
 d3.json('alabama/mergedalabama3.json', function(data) {
@@ -78,7 +96,7 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
 	counties = svg.append("g")
 	      .attr("class", "counties")
-	      //.attr("transform", "translate("+margin.left + ", " + margin.top+")")
+	      .attr("transform", "translate(-175,0)")
 	counties.selectAll("path")
 	    .data(topojson.feature(data, data.objects.alabama).features)
 	    .enter().append("path")
@@ -100,13 +118,13 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 		
 
 		})
-		/*.on("mouseout", function(d) {
+		.on("mouseout", function(d) {
 			 d3.select(this).attr("stroke-opacity", "0").moveToBack()
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
 
-		}) */
+		}) 
 	counties.append("path")
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
@@ -430,6 +448,7 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 			};
 	function mouseOverEvents(data, element) {
     	tooltip.selectAll("div").remove();
+
     	var tooltipcontainer = tooltip.append("div");
 					
 
@@ -586,7 +605,19 @@ d3.json('alabama/mergedalabama3.json', function(data) {
     		.attr("height", barsheight - 1)
     		.attr("fill", "#ececec")
 
-						
+		gannotation.append('text')
+	.text(function(d) { 
+		if (d=="Change in turnout from the 2016 Presidential Election") {
+			return Math.round((data['senateturnout'] - data['presturnout'])*100)+"%";
+		} else {
+			return Math.round(((data['percentmoorevotes'] - data['percentjonesvotes']) - (data['percenttrumpvotes'] - data['percentclintonvotes']))*100)+'%';
+		}
+	})
+	.attr("y", function(d, i) { return i * height/3;})
+	.attr("dx", "2.5em")
+	.attr("class", "annotation-number")
+	.attr("dy", "3em")
+	.call(wrap, 200)
       	
       	tooltip
           .style("visibility","visible")
@@ -594,19 +625,45 @@ d3.json('alabama/mergedalabama3.json', function(data) {
             /*if(viewportWidth < 450 || mobile){
               return "250px";
             }*/
-            return (d3.event.pageY)+ 15+"px"
+            return (d3.event.pageY+35) +"px"
           })
           .style("left",function(d){
             /*if(viewportWidth < 450 || mobile){
               return "0px";
             }*/
-            return (d3.event.pageX) +"px";
+            return (d3.event.pageX - 125) +"px";
           })
 
     }
     function mouseOutEvents(data, element) {
+    	gannotation.selectAll(".annotation-number").remove();
     	tooltip
        		.style("visibility",null);
 	}
 
 })
+
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}

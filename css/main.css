@@ -115,3 +115,23 @@ body {
 
 
 }
+
+.annotation-label {
+  font-family: "Roboto";
+  text-transform: uppercase;
+  color: #535353;
+  font-size: 12px;
+  font-weight:900;
+  opacity: 0.8;
+
+
+}
+
+.annotation-number {
+  font-family: "Roboto";
+  color: #535353;
+  font-size: 24px;
+  font-weight:900;
+  
+
+}
