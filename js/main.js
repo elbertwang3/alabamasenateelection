@@ -15,19 +15,6 @@ var tooltip = d3.select("body")
     .on("click",function(){
       tooltip.style("visibility",null);
     });
-
-var trump = d3.select("#trump")
-
-
-/*console.log($('#title').position().top-height)
-console.log($('#default').position().top-height)
-console.log($('#trump').position().top-height)
-console.log($('#flipflop').position().top-height)
-console.log($('#turnoutchoropleth').position().top-height)
-console.log($('#default').position().top-height)
-console.log($('#default').position().top-height)
-console.log($('#default').position().top-height)
-console.log($('#default').position().top-height)*/
 cutoffs = []
 $(".panel").each(function() {
 	//console.log($(this).position().top-height/2)
@@ -64,8 +51,12 @@ gannotation.append('text')
 
 
 
-d3.json('alabama/mergedalabama3.json', function(data) {
-	console.log(data);
+d3.queue()
+    .defer(d3.json, 'alabama/mergedalabama3.json')
+    .defer(d3.csv, "data/bigcities.csv")
+    .await(ready);
+function ready(error,data, bigcities) {
+
 	var projection = d3.geoMercator()
     .scale(1)
     .translate([0, 0]);
@@ -79,15 +70,13 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 	    s = .9 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
 	    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 	 
-	    console.log(s)
-	    console.log(t)
+	  
 	// Update the projection to use computed scale & translate.
 	projection
 	    .scale(s)
 	    .translate(t); 
 
 	data.objects.alabama.geometries.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];})
-	console.log(data.objects.alabama.geometries)
 	/*var turnoutScale = d3.scaleQuantile()
 					.domain(data.features.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];}))
 					.range(["#ff3333",'#FD5353','#FC7474','#FA9494','#F8B4B4','#F7D5D5',"#f5f5f5"]);*/
@@ -129,14 +118,50 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
 
+		console.log(bigcities);
+	bigcitiesg = svg.append("g")
+		.attr("class", "big-cities")
+
+	bigcity = bigcitiesg.selectAll(".city")
+		.data(bigcities)
+		.enter()
+	bigcity
+		.append("circle")
+		.attr("class", "big-city")
+		//.attr("cx", function (d) { console.log(projection(parseFloat(d['lng']))); return projection(parseFloat(d['lng'])); })
+		//.attr("cy", function (d) { console.log(projection(parseFloat(d['lat'])));return projection(parseFloat(d['lat'])); })
+		.attr("r", 3)
+		.attr("cx", -175)
+		 .attr("transform", function(d) {
+		    return "translate(" + projection([
+		      d['lng'],
+		      d['lat']
+		    ]) + ")";
+		});
+	bigcity
+		.append("text")
+		.text(function(d) { return d['city']; })
+		.attr("class", "big-city-name")
+		.attr("x", -170)
+		.attr("y", 12)
+		 .attr("transform", function(d) {
+		    return "translate(" + projection([
+		      d['lng'],
+		      d['lat']
+		    ]) + ")";
+		});
+
+
+
 	     // .attr("stroke", "#aaa")
 	    
 	    //.append("title")
 	      //.text(function(d) { return d.rate + "%"; });
+	
 	container.scroll(function() { 
 	
 	    scrollTop = container.scrollTop()
-	    //console.log(scrollTop);
+
 	    if (scrollTop > cutoffs[0] && scrollTop < cutoffs[1]) {
 	
 	    	d3.selectAll(".county")
@@ -459,7 +484,7 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 			.text(function () { return data['countyname'] + " County"; })
 		tooltipheader.append("div")
 						.attr("class", "tot-registered-voters")
-						.text(function () { console.log(data['total2017'].toLocaleString());return "total registered voters: " + parseInt(data['total2017']).toLocaleString(); })
+						.text(function () { return "total registered voters: " + parseInt(data['total2017']).toLocaleString(); })
 		electionlabels = tooltipcontainer.append("div")
 			.attr("class", "election-labels")
 
@@ -568,7 +593,7 @@ d3.json('alabama/mergedalabama3.json', function(data) {
 			.append("g")
 			.attr("transform", function(d, i) { return "translate(0," + i * barsheight*1.3 + ")"; });
 
-		console.log(data);
+
    		bar.append("rect") 
 			.attr("width", function(d) {
 				if (d=="Moore") {
@@ -641,7 +666,7 @@ d3.json('alabama/mergedalabama3.json', function(data) {
        		.style("visibility",null);
 	}
 
-})
+}
 
 
 function wrap(text, width) {

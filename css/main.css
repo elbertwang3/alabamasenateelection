@@ -135,3 +135,21 @@ body {
   
 
 }
+
+.big-city {
+  fill: none;
+  stroke: black;
+  pointer-events: none;
+}
+
+.big-city-name {
+  font-family: "Roboto";
+  font-size: 10px;
+  color: black;
+  text-shadow: 1px 1px 1px #ffffff, -1px -1px 1px #ffffff, 1px 1px 1px #ffffff, -1px -1px 1px #ffffff;
+  pointer-events: none;
+}
+
+  
+
+}
