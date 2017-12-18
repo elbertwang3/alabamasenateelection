@@ -46,7 +46,7 @@ var colorScale = d3.scaleLinear()
 
 
 
-d3.json('alabama/mergedalabama2.json', function(data) {
+d3.json('alabama/mergedalabama3.json', function(data) {
 	console.log(data);
 	var projection = d3.geoMercator()
     .scale(1)
@@ -84,14 +84,15 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 	    .enter().append("path")
 	      .attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
 	      .attr("d", path)
-	      .attr("stroke", "none")
+	 
+	      .attr('stroke-opacity', 0)
 	      .attr("class", "county")
 	      .on("mouseover", function(d) {
 	      	//console.log(d.properties['countyname'])
 	      	 d3.select(this).moveToFront()
 	      	 	
-        		.attr('stroke','black')
-        		.attr("stroke-opacity", "1")
+        		.attr('stroke-opacity','1')
+        		
 
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", true);
@@ -99,13 +100,13 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 		
 
 		})
-		.on("mouseout", function(d) {
-			 d3.select(this).attr("stroke", "none").moveToBack()
+		/*.on("mouseout", function(d) {
+			 d3.select(this).attr("stroke-opacity", "0").moveToBack()
 		 	data = d.properties;
 		 	d3.select(this).classed("hover", false);
 		 	mouseOutEvents(data,d3.select(this));
 
-		}) 
+		}) */
 	counties.append("path")
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
@@ -161,86 +162,85 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 	    		.filter(function(d) {
 	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
 	    		})
+	    		.on("mouseout", function(d) {
+					 d3.select(this).attr("stroke-opacity", "0").moveToBack()
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				})
+	    		.attr("stroke-opacity", "0")
 	    		.moveToBack()
-	    		.attr("stroke", "none")
-	    		.attr("stroke-opacity", "1")
-	    
-	    		
 		}	
 		//METRO AREAS THAT FLIPFLOPPED
 		else if (scrollTop > cutoffs[3] && scrollTop < cutoffs[4]) {
 
-			d3.selectAll(".county")
-			.on("mouseout", function(d) {
-				d3.select(this).attr("stroke", 'none').moveToBack()
-		 	data = d.properties;
-		 	d3.select(this).classed("hover", false);
-		 	mouseOutEvents(data,d3.select(this));
-				d3.selectAll(".county")
-	    		.filter(function(d) {
-	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
-	    		}).moveToFront()
-			})
+			
 
 			d3.selectAll(".county")
 	    		.filter(function(d) {
 	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile')
 	    		})
 	    		.on("mouseout", function(d) {
-			
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
 
-
-		 	data = d.properties;
-		 	d3.select(this).classed("hover", false);
-		 	mouseOutEvents(data,d3.select(this));
-
-		}) 
+				}) 
 	    		.moveToFront()
-	    		.attr("stroke", "black")
-	  		.transition()
+	    		.transition()
 	    		.duration(1500)
-	    				.attr("stroke-opacity", "1") 
+	    		.attr("stroke-opacity", "1")
+		  	
 	    	d3.selectAll(".county")
 	    		.filter(function(d) {
 	    			return (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
 	    		})
+	    		.on("mouseout", function(d) {
+					 d3.select(this).attr("stroke-opacity", "0").moveToBack()
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				})
+	    		.attr("stroke-opacity", "0")
 	    		.moveToBack()
-	    		.attr("stroke", "none")
-	    		.attr("stroke-opacity", "0") 	
-			
+
+	    	 d3.selectAll(".county")
+	    		.filter(function(d) { 
+	    			
+	    			return ((d.properties['percenttrumpvotes'] > d.properties['percentclintonvotes']) 
+	    				&& (d.properties['percentmoorevotes'] < d.properties['percentjonesvotes']));
+	    		})
+	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
+	
+	    	d3.selectAll(".county")
+	    		.filter(function(d) { 
+	    			return !((d.properties['percenttrumpvotes'] > d.properties['percentclintonvotes']) 
+	    				&& (d.properties['percentmoorevotes'] < d.properties['percentjonesvotes']));
+	    		})
+
+	    		.attr("fill", "#f5f5f5")   
 	    }
 	    //ALL METRO AREAS
 	    else if (scrollTop > cutoffs[4] && scrollTop < cutoffs[5]) {
-	    	d3.selectAll(".county")
-			.on("mouseout", function(d) {
-				d3.select(this).attr("stroke", 'none').moveToBack()
-		 	data = d.properties;
-		 	d3.select(this).classed("hover", false);
-		 	mouseOutEvents(data,d3.select(this));
-				d3.selectAll(".county")
-	    		.filter(function(d) {
-	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
-	    		}).moveToFront()
-			})
+	    	
 	    	d3.selectAll(".county")
 	    		.filter(function(d) {
 	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
 	    		})
 	    		.on("mouseout", function(d) {
-			
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
 
-
-		 	data = d.properties;
-		 	d3.select(this).classed("hover", false);
-		 	mouseOutEvents(data,d3.select(this));
-
-		}) 
+				}) 
 	    		.moveToFront()
-	    		.attr("stroke", "black")
 	    		.transition()
 	    		.duration(1500)
+	    		.attr("stroke-opacity", "1")
 	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
-				.attr("stroke-opacity", "1") 	
+		
 	    		
 	    	
 	    				
@@ -260,15 +260,159 @@ d3.json('alabama/mergedalabama2.json', function(data) {
 		//METRO AREAS HAD SOME OF THE LOWEST DECREASE IN TURNOUT  
 		else if (scrollTop > cutoffs[5] && scrollTop < cutoffs[6]) {
 				
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Tuscaloosa') || (d.properties['countyname'] == 'Madison') || (d.properties['countyname'] == 'Mobile') || (d.properties['countyname'] == 'Jefferson') || (d.properties['countyname'] == 'Montgomery')
+	    		})
+	    		.on("mouseout", function(d) {
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				}) 
+	    		.moveToFront()
+	    		.transition()
+	    		.duration(1500)
+	    		.attr("stroke-opacity", "1")	
+	    	
+	    	
 	    		
-	    	
-	    	
 	    	d3.selectAll(".county")
 	    		.transition()
-	    		.delay(1500)
 	    		.duration(1500)
 	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
-	    	}
+
+	    }
+	    //black belt
+	    else if (scrollTop > cutoffs[6] && scrollTop < cutoffs[7]) {
+	    	d3.selectAll(".county")
+	    	.on("mouseout", function(d) {
+					 d3.select(this).attr("stroke-opacity", "0").moveToBack()
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				})
+	    		.attr("stroke-opacity", "0")
+
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return !(d.properties['percentblack2017'] > 0.4);
+	    		})
+	    		.transition()
+
+	    		.duration(1500)
+	    		.attr("fill", "#f5f5f5")
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return d.properties['percentblack2017'] > 0.4;
+	    		})
+	    		.transition()
+	    		.duration(1500)
+	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+	    }
+	     else if (scrollTop > cutoffs[7] && scrollTop < cutoffs[8]) {
+	    	
+
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return !(d.properties['percentwhite2017'] > 0.9);
+	    		})
+	    		.transition()
+	    		
+	    		.duration(1500)
+	    		.attr("fill", "#f5f5f5")
+	    	d3.selectAll(".county")
+	    	.filter(function(d) {
+	    			return d.properties['percentwhite2017'] > 0.9;
+	    		})
+	    		.transition()
+	    
+	    		.duration(1500)
+	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+	    }
+	    else if (scrollTop > cutoffs[8] && scrollTop < cutoffs[9]) {
+	    	
+
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return !(d.properties['evangelicalpercent'] > 0.5);
+	    		})
+	    		.transition()
+	    		
+	    		.duration(1500)
+	    		.attr("fill", "#f5f5f5")
+	    	d3.selectAll(".county")
+	    	.filter(function(d) {
+	    			return d.properties['evangelicalpercent'] > 0.5;
+	    		})
+	    		.transition()
+	    
+	    		.duration(1500)
+	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Marengo') || (d.properties['countyname'] == 'Clarke')
+	    		})
+	    			.on("mouseout", function(d) {
+					 d3.select(this).attr("stroke-opacity", "0").moveToBack()
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				})
+	    		.moveToBack()
+	    		.attr("stroke-opacity", "0")
+	    }
+	    else if (scrollTop > cutoffs[9] && scrollTop < cutoffs[10]) {
+	    	
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return !(d.properties['evangelicalpercent'] > 0.5);
+	    		})
+	    		.attr("fill", "#f5f5f5")
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return d.properties['evangelicalpercent'] > 0.5;
+	    		})
+	    		.attr("fill", function(d) {  return turnoutScale(d.properties['presturnout'] - d.properties['senateturnout'])})
+	    	d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Marengo') || (d.properties['countyname'] == 'Clarke')
+	    		})
+	    		.on("mouseout", function(d) {
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				}) 
+	    		.moveToFront()
+	    		.transition()
+	    		.duration(1500)
+	    		.attr("stroke-opacity", "1")
+	    	
+	    }
+	    else if (scrollTop > cutoffs[10] && scrollTop < cutoffs[11]) {
+		    d3.selectAll(".county")
+	    		.filter(function(d) {
+	    			return (d.properties['countyname'] == 'Marengo') || (d.properties['countyname'] == 'Clarke')
+	    		})
+	    			.on("mouseout", function(d) {
+					 d3.select(this).attr("stroke-opacity", "0").moveToBack()
+				 	data = d.properties;
+				 	d3.select(this).classed("hover", false);
+				 	mouseOutEvents(data,d3.select(this));
+
+				})
+	    		.moveToBack()
+	    		.attr("stroke-opacity", "0")
+
+	    	d3.selectAll(".county")
+	    		.transition()
+	    		.duration(1500)
+	    		.attr("fill", function(d) { return colorScale(d.properties['percentmoorevotes']-d.properties['percentjonesvotes']); })
+		}
 	});
 
 		d3.selection.prototype.moveToFront = function() {
@@ -289,9 +433,159 @@ d3.json('alabama/mergedalabama2.json', function(data) {
     	var tooltipcontainer = tooltip.append("div");
 					
 
-      	tooltipcontainer.append("div")
-						.attr("class", "county-name")
-						.text(function () { return data['countyname']; })
+      	tooltipheader = tooltipcontainer.append("div")
+						.attr("class", "tooltip-header")
+		tooltipheader.append("div")
+			.attr("class", "county-name")
+			.text(function () { return data['countyname'] + " County"; })
+		tooltipheader.append("div")
+						.attr("class", "tot-registered-voters")
+						.text(function () { console.log(data['total2017'].toLocaleString());return "total registered voters: " + parseInt(data['total2017']).toLocaleString(); })
+		electionlabels = tooltipcontainer.append("div")
+			.attr("class", "election-labels")
+
+		electionlabels.selectAll(".election-label")
+			.data([{'label': 'candidate', 'x':0},{'label': '%', 'x':70},{'label': 'votes', 'x':215}])
+			.enter()
+			.append("div")
+			.attr("class", "election-label")
+			//.attr("transform", function(d, i) { console.log(d); return "translate("+ d['x']+ ",0)"; })
+			.text(function(d) { return d['label'];})
+			.style('left', function(d) { return d['x'];})
+
+		barsvgdiv = tooltipcontainer.append("div")
+						.attr("class", "bar-svg-div")
+		var barwidth = 100,
+		barheight = 50,
+		barmargin = {top: 20, left: 0, right: 10, bottom: 5},
+		barsheight = 20
+
+		baryscale = d3.scaleLinear()
+			.domain([0,1])
+			.range([barmargin.top,barheight-barmargin.bottom])
+		barxscale = d3.scaleLinear()
+			.domain([0,1])
+			.range([barmargin.left, barwidth-barmargin.right])
+		
+
+		barsvg = barsvgdiv.append("svg")
+					.attr("class", "bar-svg")
+					.attr("width", 250)
+					.attr("height", 70)
+
+		
+
+		candidatenames = barsvg.append('g')
+			.attr("class", "candidate-names")
+			.attr("width", 40)
+			.attr("transform", function(d, i) { return "translate(0," + barmargin.top + ")"; })
+		candidatenames.selectAll(".candidate")
+			.data(["Doug Jones", "Roy Moore"])
+			.enter()
+			.append("text")
+			.attr("transform", function(d, i) { return "translate(0," + i * barsheight*1.3 + ")"; })
+			.text(function(d) { return d;})
+			.attr("class", "candidate-name")
+			.attr('x', barmargin.left)
+	    	.attr('y', barsheight/2)
+	    	.attr("font-family", "Roboto")
+	    	.attr("font-size", "12px")
+	    	.attr("text-anchor", "start")
+	    	.attr("alignment-baseline", "middle")
+
+	    percentages = barsvg.append('g')
+			.attr("class", "percentages")
+			.attr("width", 20)
+			.attr("transform", function(d, i) { return "translate(70," + barmargin.top + ")"; })
+		percentages.selectAll(".percentage")
+			.data(["Jones", "Moore"])
+			.enter()
+			.append("text")
+			.attr("transform", function(d, i) { return "translate(0," + i * barsheight*1.3 + ")"; })
+			.text(function(d) {
+				if (d=="Moore") {
+					return Math.round(data['percentmoorevotes']*100)+"%"
+				} else {
+					return Math.round(data['percentjonesvotes']*100)+"%";
+				}
+			})
+			.attr("class", "percentage")
+			.attr('x', 0)
+	    	.attr('y', barsheight/2)
+	    	.attr("font-family", "Roboto")
+	    	.attr("font-size", "12px")
+	    	.attr("text-anchor", "start")
+	    	.attr("alignment-baseline", "middle")
+	    votes = barsvg.append('g')
+			.attr("class", "votes")
+			.attr("width", 20)
+			.attr("transform", function(d, i) { return "translate(240," + barmargin.top + ")"; })
+		votes.selectAll(".vote")
+			.data(["Jones", "Moore"])
+			.enter()
+			.append("text")
+			.attr("transform", function(d, i) { return "translate(0," + i * barsheight*1.3 + ")"; })
+			.text(function(d) {
+				if (d=="Moore") {
+					return parseInt(data['moorevotes']).toLocaleString();
+				} else {
+					return parseInt(data['jonesvotes']).toLocaleString();
+				}
+			})
+			.attr("class", "vote")
+			.attr('x', 0)
+	    	.attr('y', barsheight/2)
+	    	.attr("font-family", "Roboto")
+	    	.attr("font-size", "12px")
+	    	.attr("text-anchor", "end")
+	    	.attr("alignment-baseline", "middle")
+
+	    bars = barsvg.append('g')
+			.attr("class", "bars")
+			.attr("transform", function(d, i) { return "translate(100," + barmargin.top + ")"; })
+		bar = bars.selectAll(".bar")
+			.data(["Jones", "Moore"])
+			.enter()
+			.append("g")
+			.attr("transform", function(d, i) { return "translate(0," + i * barsheight*1.3 + ")"; });
+
+		console.log(data);
+   		bar.append("rect") 
+			.attr("width", function(d) {
+				if (d=="Moore") {
+					return  barxscale(data['percentmoorevotes']);
+				} else {
+					return barxscale(data['percentjonesvotes']);
+				}
+			})
+			
+    		.attr("height", barsheight - 1)
+    		.attr("fill", function(d) { 
+    			if (d=="Moore") {
+					return "#f55";
+				} else {
+					return "#1055fa";
+				}
+			})
+			.attr("opacity", 0.7)
+		bar.append("rect") 
+			.attr("width", function(d) {
+				if (d=="Moore") {
+					return barxscale(1) - barxscale(data['percentmoorevotes']);
+				} else {
+					return barxscale(1) - barxscale(data['percentjonesvotes']);
+				}
+			})
+			.attr("x", function(d) {
+				if (d=="Moore") {
+					return barxscale(data['percentmoorevotes']);
+				} else {
+					return barxscale(data['percentjonesvotes']);
+				}
+			})
+    		.attr("height", barsheight - 1)
+    		.attr("fill", "#ececec")
+
 						
       	
       	tooltip

@@ -17,7 +17,7 @@ def main(args):
 
 
 		
-	with open('alabama/alabama2.json') as data_file:    
+	with open('alabama/alabama.json') as data_file:    
 		data = json.load(data_file)
 		#pass
 	#print data
@@ -34,7 +34,7 @@ def main(args):
 			properties[headernames[j]] = csvdict[geoid][j]
 		#print properties
 		#break
-	with open('alabama/mergedalabama2.json', 'w') as fp:
+	with open('alabama/mergedalabama3.json', 'w') as fp:
 		json.dump(data, fp)
 if __name__ == "__main__":
 	main(sys.argv)

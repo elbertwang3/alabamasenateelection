@@ -59,11 +59,12 @@ body {
 }
 .counties {
   stroke-linecap: round;
-    stroke-width: 2px;
+    stroke-width: 2px;  
 }
 .county {
     stroke-linecap: round;
     stroke-width: 2px;
+    stroke: black;
 
  
 }
@@ -73,9 +74,44 @@ body {
 }
 
 .county-border {
-
-  stroke: #fff;
-  stroke-width: 0.3px;
+    
+  stroke: white;
+  stroke-width: 0.5px;
   fill: none;
+
 }
+.tooltip-header {
+
+   text-align: left;
+
+}
+.county-name {
+     font-weight: 700;
+}
+.candidate-name {
+  text-align: right;
+
+}
+
+.tot-registered-voters {
+  font-size: 10px;
+  opacity: 0.8;
+}
+.election-labels{ 
+  position: relative;
+  overflow: auto;
+  height: 15px;
+  top: 10px;
+
+
+      border-bottom: 1px solid #cdcdcd;
+
+}
+.election-label {
+  position: absolute;
+  display: inline-block;
+  font-size: 10px;
+  opacity: 0.8;
+
+
 }
