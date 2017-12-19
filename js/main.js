@@ -4,9 +4,11 @@ margin = {top: 50, bottom: 50, left: 50, right: 50},
 container = $('#container'),
 scrollTop = container.scrollTop()
 svg = d3.select('#sticky')
+ .attr("viewBox", "0 0 " + (width) + " " + (height))
 	.append("svg")
 	.attr("width", width)
 	.attr("height", height)
+	.attr("class","svg")
 
 var tooltip = d3.select("body")
     .append("div")
@@ -22,8 +24,13 @@ $(".panel").each(function() {
 	cutoffs.push($(this).position().top)
 })
 
+var mobile = false;
+console.log(window.innerWidth)
+if (window.innerWidth < 601) {
+	console.log("getting here")
+	mobile = true;
 
-
+}
 
 
 
@@ -33,7 +40,7 @@ var colorScale = d3.scaleLinear()
 var turnoutScale = d3.scaleThreshold()
 					.domain([0.2,0.25,0.3,0.35])
 					.range(['#F6DEDE','#F9B0B0','#FC8383','#FF5555']);
-
+if (!mobile) {
 annotations = svg.append("g")
 	.attr("class", "annotations")
 	.attr("transform", "translate(" + 2.8*width/5 + ", " + 1.75*height/4 + ")")
@@ -109,13 +116,14 @@ tiles2 = legend2.selectAll('g')
 tiles2.append("rect")
 	.attr("width", 30)
 	.attr("height", 10)
-	.attr("fill", function(d) { console.log(d);return turnoutScale(d); })
+	.attr("fill", function(d) { return turnoutScale(d); })
 tiles2.append("text")
 	.text(function(d) { return -d*100 +"%";})
 	.attr("class", "legend-text")
 	.attr("text-anchor", "middle")
 	.attr("x", 15)
 	.attr("y", 25)
+}
 
 
 
@@ -142,6 +150,8 @@ function ready(error,data, bigcities) {
 	    .projection(projection);
 
 	// Compute the bounds of a feature of interest, then derive scale & translate.
+	console.log(width)
+	console.log(height);
 	var b = path.bounds(topojson.feature(data, data.objects.alabama)),
 	    s = .9 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
 	    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
@@ -156,10 +166,15 @@ function ready(error,data, bigcities) {
 	/*var turnoutScale = d3.scaleQuantile()
 					.domain(data.features.map(function(d) { return d.properties['presturnout'] - d.properties['senateturnout'];}))
 					.range(["#ff3333",'#FD5353','#FC7474','#FA9494','#F8B4B4','#F7D5D5',"#f5f5f5"]);*/
-	
-	counties = svg.append("g")
-	      .attr("class", "counties")
-	      .attr("transform", "translate(-160,0)")
+	if (!mobile) {
+		counties = svg.append("g")
+		      .attr("class", "counties")
+		      .attr("transform", "translate("+ (-(width/4.5))+",0)")
+		     } else {
+		     	counties = svg.append("g")
+		      .attr("class", "counties")
+		      .attr("transform", "translate(0,0)")
+		     }
 	counties.selectAll("path")
 	    .data(topojson.feature(data, data.objects.alabama).features)
 	    .enter().append("path")
@@ -192,7 +207,7 @@ function ready(error,data, bigcities) {
 		.attr("class","county-border")
 		.attr("d", path(topojson.mesh(data, data.objects.alabama, function(a, b) { return a !== b; })));
 
-		console.log(bigcities);
+	
 	bigcitiesg = svg.append("g")
 		.attr("class", "big-cities")
 
@@ -205,7 +220,13 @@ function ready(error,data, bigcities) {
 		//.attr("cx", function (d) { console.log(projection(parseFloat(d['lng']))); return projection(parseFloat(d['lng'])); })
 		//.attr("cy", function (d) { console.log(projection(parseFloat(d['lat'])));return projection(parseFloat(d['lat'])); })
 		.attr("r", 3)
-		.attr("cx", -160)
+		.attr("cx", function() { 
+			if (mobile) { 
+				return 0;
+			} else {
+				return -width/4.5
+			}
+		})
 		 .attr("transform", function(d) {
 		    return "translate(" + projection([
 		      d['lng'],
@@ -216,7 +237,13 @@ function ready(error,data, bigcities) {
 		.append("text")
 		.text(function(d) { return d['city']; })
 		.attr("class", "big-city-name")
-		.attr("x", -155)
+		.attr("x", function() { 
+			if (mobile) { 
+				return 0;
+			} else {
+				return -width/4.5 +5;
+			}
+		})
 		.attr("y", 12)
 		 .attr("transform", function(d) {
 		    return "translate(" + projection([
@@ -563,7 +590,9 @@ function ready(error,data, bigcities) {
 			};
 	function mouseOverEvents(data, element) {
     	tooltip.selectAll("div").remove();
-    	gannotation.selectAll(".annotation-number").remove();
+    	if (!mobile) {
+    		gannotation.selectAll(".annotation-number").remove();
+    	}
     	var tooltipcontainer = tooltip.append("div");
 					
 
@@ -747,19 +776,21 @@ function ready(error,data, bigcities) {
     		.attr("class", "demographic-value")
     		.style('left', function(d,i) { return i * 68 + 12;})
 
-		gannotation.append('text')
-	.text(function(d) { 
-		if (!(d=="How Moore fared compared to Trump in 2016")) {
-			return Math.round((data['senateturnout'] - data['presturnout'])*100)+"%";
-		} else {
-			return Math.round((data['percentmoorevotes']  - (data['percenttrumpvotes']))*100)+'%';
+    	if (!mobile) {
+			gannotation.append('text')
+			.text(function(d) { 
+				if (!(d=="How Moore fared compared to Trump in 2016")) {
+					return Math.round((data['senateturnout'] - data['presturnout'])*100)+"%";
+				} else {
+					return Math.round((data['percentmoorevotes']  - (data['percenttrumpvotes']))*100)+'%';
+				}
+			})
+			.attr("y", function(d, i) { return i * height/5;})
+			.attr("dx", "2.5em")
+			.attr("class", "annotation-number")
+			.attr("dy", "2.5em")
 		}
-	})
-	.attr("y", function(d, i) { return i * height/5;})
-	.attr("dx", "2.5em")
-	.attr("class", "annotation-number")
-	.attr("dy", "2.5em")
-      	
+	      	
       	tooltip
           .style("visibility","visible")
           .style("top",function(d){
@@ -777,19 +808,21 @@ function ready(error,data, bigcities) {
 
     }
     function mouseOutEvents(data, element) {
-    	gannotation.selectAll(".annotation-number").remove();
-    	gannotation.append('text')
-			.text(function(d) { 
-				if (!(d=="How Moore fared compared to Trump in 2016")) {
-					return "-25%";
-				} else {
-					return '-10%';
-				}
-			})
-			.attr("y", function(d, i) { return i * height/5;})
-			.attr("dx", "2.5em")
-			.attr("class", "annotation-number")
-			.attr("dy", "2.5em")
+    	if (!mobile) {
+	    	gannotation.selectAll(".annotation-number").remove();
+	    	gannotation.append('text')
+				.text(function(d) { 
+					if (!(d=="How Moore fared compared to Trump in 2016")) {
+						return "-25%";
+					} else {
+						return '-10%';
+					}
+				})
+				.attr("y", function(d, i) { return i * height/5;})
+				.attr("dx", "2.5em")
+				.attr("class", "annotation-number")
+				.attr("dy", "2.5em")
+		}
 
     	tooltip
        		.style("visibility",null);
@@ -821,3 +854,19 @@ function wrap(text, width) {
     }
   });
 }
+console.log("hi")
+var chart = $(".svg");
+console.log(chart)
+    aspect = chart.width() / chart.height(),
+     svgcontainer = chart.parent();
+    console.log(chart.width)
+$(window).on("resize", function() {
+	console.log("resizing")
+
+   var targetWidth = svgcontainer.width();
+   
+    chart.attr("width", targetWidth);
+    chart.attr("height", Math.round(targetWidth / aspect));
+    width = targetWidth;
+    height = targetWidth/aspect;
+}).trigger("resize");
