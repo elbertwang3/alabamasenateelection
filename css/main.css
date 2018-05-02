@@ -266,15 +266,20 @@ p {
 
   h1 {
     font-size: 24px;
+    text-align: center;
+  }
+  h2 {
+    font-size: 20px;
+    text-align: center;
   }
 
     .panel {
 
-
+      padding: 1em;
   margin: 0 0 20em 1em;
     border-radius: 1em;
     background: #fff;
-    max-width: 7.5em;
+    max-width: 8em;
     z-index: 600;
     box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.1);
 

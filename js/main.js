@@ -25,13 +25,9 @@ $(".panel").each(function() {
 })
 
 var mobile = false;
-console.log(window.innerWidth)
-if (window.innerWidth < 601) {
-	console.log("getting here")
+if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
 	mobile = true;
-
 }
-
 
 
 var colorScale = d3.scaleLinear()
@@ -150,8 +146,6 @@ function ready(error,data, bigcities) {
 	    .projection(projection);
 
 	// Compute the bounds of a feature of interest, then derive scale & translate.
-	console.log(width)
-	console.log(height);
 	var b = path.bounds(topojson.feature(data, data.objects.alabama)),
 	    s = .9 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
 	    t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
@@ -854,14 +848,10 @@ function wrap(text, width) {
     }
   });
 }
-console.log("hi")
 var chart = $(".svg");
-console.log(chart)
     aspect = chart.width() / chart.height(),
      svgcontainer = chart.parent();
-    console.log(chart.width)
 $(window).on("resize", function() {
-	console.log("resizing")
 
    var targetWidth = svgcontainer.width();
    
