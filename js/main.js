@@ -32,7 +32,7 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 
 var colorScale = d3.scaleLinear()
 					.domain([0.810500,0, -0.765782])
-					.range(["#CC3D3D","#f5f5f5","#1A80C4"]);
+					.range(["#dc5147","#f5f5f5","#3579a8"]);
 var turnoutScale = d3.scaleThreshold()
 					.domain([0.2,0.25,0.3,0.35])
 					.range(['#fef0d9','#fdcc8a','#fc8d59','#d7301f']);
@@ -719,9 +719,9 @@ function ready(error,data, bigcities) {
     		.attr("height", barsheight - 1)
     		.attr("fill", function(d) { 
     			if (d=="Moore") {
-					return "#f55";
+					return "#dc5147";
 				} else {
-					return "#1055fa";
+					return "#3579a8";
 				}
 			})
 			.attr("opacity", 0.7)
